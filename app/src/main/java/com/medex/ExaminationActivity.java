@@ -22,8 +22,6 @@ import java.util.List;
 public class ExaminationActivity extends Activity {
     private static final String TAG = ExaminationActivity.class.getSimpleName();
 
-    // Index of api demo cards.
-    // Visible for testing.
     static final int START = 0;
     static final int STOP = 1;
     static final int WATCH_DEMO_VIDEO = 2;

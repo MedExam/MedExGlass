@@ -62,7 +62,7 @@ public class MenuActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        System.out.println( " onresume menu:"+LocalDataStore.data.currentSession.isRunning);
+//        System.out.println( " onresume menu:"+LocalDataStore.data.currentSession.isRunning);
         mCardScroller.activate();
     }
 
