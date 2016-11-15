@@ -30,22 +30,26 @@ public class ExaminationActivity extends Activity {
     private View mView;
     private CardScrollAdapter mAdapter;
 
+    private LocalDataStore localDataStore_instance;
+
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
-
+        Log.d(TAG, "onCREATE ExaminationActivity!");
         mAdapter = new CardAdapter(createCards(this));
         mCardScroller = new CardScrollView(this);
         mCardScroller.setAdapter(mAdapter);
         setContentView(mCardScroller);
         setCardScrollerListener();
+
+        localDataStore_instance = LocalDataStore.getInstance();
     }
 
     private List<CardBuilder> createCards(Context context) {
         ArrayList<CardBuilder> cards = new ArrayList<CardBuilder>();
         String footnote = new String();
         cards.add(START, new CardBuilder(this, CardBuilder.Layout.TEXT)
-                .setText("STart a new examination session").setFootnote(footnote));
+                .setText("Start a new examination session").setFootnote(footnote));
         cards.add(STOP, new CardBuilder(this, CardBuilder.Layout.TEXT)
                 .setText("Stop the current examination session").setFootnote(footnote));
         cards.add(WATCH_DEMO_VIDEO, new CardBuilder(this, CardBuilder.Layout.TEXT)
@@ -58,7 +62,9 @@ public class ExaminationActivity extends Activity {
         super.onResume();
         System.out.println("onresume");
         refreshCards();
-        mCardScroller.activate();
+        if(mCardScroller != null) {
+            mCardScroller.activate();
+        }
     }
 
     private void refreshCards() {
@@ -66,16 +72,16 @@ public class ExaminationActivity extends Activity {
         for(int position =0; position< mAdapter.getCount();position++){
             switch (position){
                 case START:
-                    System.out.println("onresume START " + LocalDataStore.data.currentSession.isRunning);
+                    System.out.println("onresume START sessionRunning:" + localDataStore_instance.currentSession.isRunning());
                      footnote = new String();
-                    if(LocalDataStore.data.currentSession.isRunning)
-                        footnote = new String("A seesion is in progress. Stop to start new session.");
+                    if(localDataStore_instance.currentSession.isRunning())
+                        footnote = new String("A session is in progress. Stop to start new session.");
                     ((CardBuilder)(mAdapter.getItem(position))).setFootnote(footnote);
                     break;
                 case STOP:
-                    System.out.println("onresume STOP " + LocalDataStore.data.currentSession.isRunning);
+                    System.out.println("onresume STOP sessionRunning:" + localDataStore_instance.currentSession.isRunning());
                      footnote = new String();
-                    if(!LocalDataStore.data.currentSession.isRunning)
+                    if(!localDataStore_instance.currentSession.isRunning())
                         footnote = new String("No active session");
                     else
                         footnote = new String();
@@ -109,14 +115,17 @@ public class ExaminationActivity extends Activity {
                 int soundEffect = Sounds.TAP;
                 switch (position) {
                     case START:
-                        if(!LocalDataStore.data.currentSession.isRunning) {
-                            LocalDataStore.data.currentSession.start();
-//                            refreshCards();
+                        if(!localDataStore_instance.currentSession.isRunning()) {
+                            Log.d(TAG, "clicked Start Card, currentSession is NOT running, going to start())");
+                            localDataStore_instance.currentSession.start();
                         }
                         startActivity(new Intent(ExaminationActivity.this, MenuActivity.class));
+                        break;
                     case STOP:
-                        if(LocalDataStore.data.currentSession.isRunning)
-                            LocalDataStore.data.currentSession.stop();
+                        if(localDataStore_instance.currentSession.isRunning()) {
+                            localDataStore_instance.currentSession.stop();
+                            refreshCards();
+                        }
                         break;
                     case WATCH_DEMO_VIDEO:
                         break;

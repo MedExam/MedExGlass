@@ -76,6 +76,7 @@ public class MainActivity extends Activity {
                 int soundEffect = Sounds.TAP;
                 switch (position) {
                     case CARD_BUILDER:
+                        Log.d(TAG, "Going to Examination Activity");
                         startActivity(new Intent(MainActivity.this, ExaminationActivity.class));
                         break;
                     default:
