@@ -31,6 +31,7 @@ public class LocalDataStore {
         return _instance;
     }
 
+
     //public LinkedList<ExaminationSession> completedSessions = new LinkedList<ExaminationSession>();
     //public static final LocalDataStore data = new LocalDataStore();
     //public static ExaminationSession currentSession;
