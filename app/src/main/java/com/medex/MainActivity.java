@@ -5,6 +5,7 @@ import com.google.android.glass.widget.CardBuilder;
 import com.google.android.glass.widget.CardScrollAdapter;
 import com.google.android.glass.widget.CardScrollView;
 import com.medex.cards.CardAdapter;
+import com.medex.globals.LocalDataStore;
 
 import android.app.Activity;
 import android.content.Context;
@@ -77,7 +78,10 @@ public class MainActivity extends Activity {
                 switch (position) {
                     case CARD_BUILDER:
                         Log.d(TAG, "Going to Examination Activity");
-                        startActivity(new Intent(MainActivity.this, ExaminationActivity.class));
+                        if (!LocalDataStore.getInstance().currentSession.isRunning())
+                            startActivity(new Intent(MainActivity.this, ExaminationActivity.class));
+                        else
+                            startActivity(new Intent(MainActivity.this, ExaminationTypeActivity.class));
                         break;
                     default:
                         soundEffect = Sounds.ERROR;

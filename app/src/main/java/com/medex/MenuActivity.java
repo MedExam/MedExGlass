@@ -6,6 +6,7 @@ import com.google.android.glass.widget.CardBuilder;
 import com.google.android.glass.widget.CardScrollAdapter;
 import com.google.android.glass.widget.CardScrollView;
 import com.medex.cards.CardAdapter;
+import com.medex.dto.Patient;
 import com.medex.globals.LocalDataStore;
 
 import android.app.Activity;
@@ -31,9 +32,11 @@ public class MenuActivity extends Activity {
 
     // Index of api demo cards.
     // Visible for testing.
-    static final int RECORD_VIDEO = 0;
-    static final int TAKE_AN_IMAGE = 1;
-    static final int STREAM = 2;
+    static final int PERSONAL_DETAILS = 0;
+    static final int ALLERGIES = 1;
+    static final int MEDICATIONS = 2;
+    static final int TAKE_AN_IMAGE = 3;
+    static final int RECORD_VIDEO = 4;
     //static final int SLIDER = 7;
     private CardScrollView mCardScroller;
 
@@ -52,14 +55,21 @@ public class MenuActivity extends Activity {
     }
     private List<CardBuilder> createCards(Context context) {
         ArrayList<CardBuilder> cards = new ArrayList<CardBuilder>();
+        Patient patient = new Patient(LocalDataStore.getInstance().currentSession.getUser());
+        cards.add(PERSONAL_DETAILS, new CardBuilder(this, CardBuilder.Layout.TEXT)
+                .setText("Patient Details\n" + patient.toStringMetadata()));
+        cards.add(ALLERGIES, new CardBuilder(this, CardBuilder.Layout.TEXT)
+                .setText("Allergies\n"+ patient.toStringAllergies()));
+        cards.add(MEDICATIONS, new CardBuilder(this, CardBuilder.Layout.TEXT)
+                .setText("Medications\n" + patient.toStringMedications()));
+        cards.add(TAKE_AN_IMAGE, new CardBuilder(this, CardBuilder.Layout.TEXT)
+                .setText("Take image"));
         cards.add(RECORD_VIDEO, new CardBuilder(this, CardBuilder.Layout.TEXT)
                 .setText("Record a video"));
 
-        cards.add(TAKE_AN_IMAGE, new CardBuilder(this, CardBuilder.Layout.TEXT)
-                .setText("Take image"));
 
-        cards.add(STREAM, new CardBuilder(this, CardBuilder.Layout.TEXT)
-                .setText("Stream Live Video"));
+//        cards.add(STREAM, new CardBuilder(this, CardBuilder.Layout.TEXT)
+//                .setText("Stream Live Video"));
 
 
         return cards;

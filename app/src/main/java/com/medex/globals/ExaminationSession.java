@@ -2,6 +2,8 @@ package com.medex.globals;
 
 import android.util.Log;
 
+import org.json.JSONObject;
+
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -15,10 +17,10 @@ public class ExaminationSession implements Cloneable{
     private LinkedList<String> images = new LinkedList<String>();
     private LinkedList<String> videos = new LinkedList<String>();
     private boolean isRunning;
-
+    private JSONObject user;
+    public Assessment assessment;
 
     public ExaminationSession(){}
-
 
     public ExaminationSession clone() {
         ExaminationSession e = new ExaminationSession();
@@ -27,6 +29,14 @@ public class ExaminationSession implements Cloneable{
         e.images = (LinkedList<String>) this.images.clone();
         e.videos = (LinkedList<String>) this.videos.clone();
         return e;
+    }
+
+    public JSONObject getUser() {
+        return user;
+    }
+
+    public void setUser(JSONObject user) {
+        this.user = user;
     }
 
     public long getStartTimestamp() {
@@ -47,6 +57,7 @@ public class ExaminationSession implements Cloneable{
     public void start(){
 
         this.isRunning = true;
+        assessment = new Assessment();
         this.setStartTimestamp((long) new Date().getTime());
         Log.d(TAG, "localDataStore_instance.currentSession.start() called completed. isRunning: " + this.isRunning);
     }
