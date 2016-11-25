@@ -59,10 +59,13 @@ public class UserActivity extends Activity {
                 thread.join();
             }
             patients = LocalDataStore.getInstance().patients;
+
             for(int i = 0; i < patients.length(); i++)
             {
-                cards.add(i,new CardBuilder(this,CardBuilder.Layout.TEXT)
-                        .setText(((JSONObject)(patients.get(i))).getString("name")));
+                cards.add(i,new CardBuilder(this, CardBuilder.Layout.COLUMNS)
+                        .setText(((JSONObject)(patients.get(i))).getString("name") + "\n" +("M:"+((JSONObject)(patients.get(i))).getString("phoneNumber")))
+                        .setTimestamp(((JSONObject)(patients.get(i))).getString("emailId"))
+                        .setIcon(R.drawable.ic_glass_lincoln));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -98,9 +101,10 @@ public class UserActivity extends Activity {
                 int soundEffect = Sounds.TAP;
                 LocalDataStore.getInstance().currentSession.start();
                 try {
-                    LocalDataStore.getInstance().currentSession.setUser((JSONObject)LocalDataStore.getInstance().patients.get(position));
-                    startActivity(new Intent(UserActivity.this, ExaminationTypeActivity.class));
-                } catch (JSONException e) {
+                        LocalDataStore.getInstance().currentSession.setUser((JSONObject) LocalDataStore.getInstance().patients.get(position));
+                        startActivity(new Intent(UserActivity.this, ExaminationTypeActivity.class));
+                    }
+                catch (JSONException e) {
                     e.printStackTrace();
                 }
                 AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);

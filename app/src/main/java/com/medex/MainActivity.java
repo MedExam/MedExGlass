@@ -29,7 +29,7 @@ import android.widget.AdapterView;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import android.os.StrictMode;
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -37,7 +37,7 @@ public class MainActivity extends Activity {
     // Visible for testing.
     static final int CARD_BUILDER = 0;
     private CardScrollView mCardScroller;
-    private Handler handler = new Handler();
+    final Handler handler = new Handler();
     private View mView;
     private CardScrollAdapter mAdapter;
     /**
@@ -45,33 +45,40 @@ public class MainActivity extends Activity {
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     private GoogleApiClient client;
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                LocalDataStore.getInstance().patients = ParseUtil.getPatients();
+                System.out.println("\nRunning BackGroung Fetch Service\n");
+                handler.postDelayed(this, 1200000);
+            }
+            catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle bundle) {
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
         super.onCreate(bundle);
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    LocalDataStore.getInstance().patients = ParseUtil.getPatients();
-                    handler.postDelayed(this, 10000);
-                }
-                catch(Exception e){
-                    e.printStackTrace();
-                }
-            }
-        };
-        final boolean b = handler.postDelayed(runnable, 100);
         mAdapter = new CardAdapter(createCards(this));
         mCardScroller = new CardScrollView(this);
         mCardScroller.setAdapter(mAdapter);
         setContentView(mCardScroller);
         setCardScrollerListener();
+
+
+
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
-
     private List<CardBuilder> createCards(Context context) {
         ArrayList<CardBuilder> cards = new ArrayList<CardBuilder>();
         cards.add(CARD_BUILDER, new CardBuilder(this, CardBuilder.Layout.TEXT)
@@ -82,6 +89,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        handler.postDelayed(runnable, 100);
         mCardScroller.activate();
     }
 

@@ -24,6 +24,7 @@ public class ExaminationActivity extends Activity {
 
     static final int START = 0;
     static final int WATCH_DEMO_VIDEO = 1;
+    static final int SET_PATIENT = 2;
     private CardScrollView mCardScroller;
 
     private View mView;
@@ -56,6 +57,8 @@ public class ExaminationActivity extends Activity {
                     .setText("Stop the current examination session").setFootnote(""));
         cards.add(WATCH_DEMO_VIDEO, new CardBuilder(this, CardBuilder.Layout.TEXT)
                 .setText("Get STarted").setFootnote("Tap to see demo"));
+        cards.add(SET_PATIENT, new CardBuilder(this, CardBuilder.Layout.TEXT)
+                .setText("SET PATIENT").setFootnote(""));
         return cards;
     }
 
@@ -120,6 +123,11 @@ public class ExaminationActivity extends Activity {
 
                     case WATCH_DEMO_VIDEO:
                         break;
+
+                    case SET_PATIENT:
+                        startActivity(new Intent(ExaminationActivity.this, VoiceInputActivity.class));
+                        break;
+
                     default:
                         soundEffect = Sounds.ERROR;
                         Log.d(TAG, "Don't show anything");
