@@ -37,6 +37,7 @@ public class VoiceInputActivity extends Activity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         ArrayList<CardBuilder> cards = new ArrayList<CardBuilder>();
         JSONArray patients = LocalDataStore.getInstance().patients;
         if (requestCode == CODE_SPEECH && resultCode == RESULT_OK) {
@@ -61,7 +62,7 @@ public class VoiceInputActivity extends Activity {
                     e.printStackTrace();
                 }
 
-                // super.onActivityResult(requestCode, resultCode, data);
+                //
 
             }
         }
