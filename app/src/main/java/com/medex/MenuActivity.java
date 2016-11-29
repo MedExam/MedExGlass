@@ -36,7 +36,7 @@ public class MenuActivity extends Activity {
     static final int ALLERGIES = 1;
     static final int MEDICATIONS = 2;
     static final int TAKE_AN_IMAGE = 3;
-    static final int RECORD_VIDEO = 4;
+    static final int TAKE_NOTES = 4;
     //static final int SLIDER = 7;
     private CardScrollView mCardScroller;
 
@@ -64,8 +64,8 @@ public class MenuActivity extends Activity {
                 .setText("Medications\n" + patient.toStringMedications()));
         cards.add(TAKE_AN_IMAGE, new CardBuilder(this, CardBuilder.Layout.TEXT)
                 .setText("Take image"));
-        cards.add(RECORD_VIDEO, new CardBuilder(this, CardBuilder.Layout.TEXT)
-                .setText("Record a video"));
+        cards.add(TAKE_NOTES, new CardBuilder(this, CardBuilder.Layout.TEXT)
+                .setText("Notes"));
 
 
 //        cards.add(STREAM, new CardBuilder(this, CardBuilder.Layout.TEXT)
@@ -100,9 +100,9 @@ public class MenuActivity extends Activity {
                 Log.d(TAG, "Clicked view at position " + position + ", row-id " + id);
                 int soundEffect = Sounds.TAP;
                 switch (position) {
-                    case RECORD_VIDEO:
+                    case TAKE_NOTES:
                         Log.d(TAG, "Taking Notes!");
-//                        startActivity(new Intent(MenuActivity.this, MenuActivity.class));
+                      startActivity(new Intent(MenuActivity.this, MainNotesActivity.class));
                         break;
                     case TAKE_AN_IMAGE:
                         Log.d(TAG, "Taking an image!");

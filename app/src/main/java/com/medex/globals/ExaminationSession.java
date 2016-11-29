@@ -94,6 +94,12 @@ public class ExaminationSession implements Cloneable{
         this.images.add(filepath);
     }
 
+    //store imagePath to images
+    public void addNotes(String note){
+        Log.d(TAG, "addNotes.... adding Notes " + note);
+        this.notes.add(note);
+    }
+
 
     //debugging purposes - prints out all images path files stored for current session.
     public void showCurrentImages(){

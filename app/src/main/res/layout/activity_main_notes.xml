@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_marginLeft="@dimen/card_margin"
+    android:layout_marginRight="@dimen/card_margin"
+    android:keepScreenOn="true" >
+
+    <TableRow>
+
+        <TextView
+            android:padding="3dip"
+            android:text="@string/app_name" />
+
+        <TextView
+            android:layout_gravity="right"
+            android:padding="3dip"
+            android:text="@string/app_name" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:padding="3dip"
+            android:text="@string/app_name" />
+
+        <TextView
+            android:layout_gravity="right"
+            android:padding="3dip"
+            android:text="@string/app_name" />
+    </TableRow>
+
+</TableLayout>
