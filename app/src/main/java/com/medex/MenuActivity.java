@@ -101,7 +101,7 @@ public class MenuActivity extends Activity {
                 int soundEffect = Sounds.TAP;
                 switch (position) {
                     case RECORD_VIDEO:
-                        Log.d(TAG, "Recording a video!");
+                        Log.d(TAG, "Taking Notes!");
 //                        startActivity(new Intent(MenuActivity.this, MenuActivity.class));
                         break;
                     case TAKE_AN_IMAGE:

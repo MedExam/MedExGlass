@@ -14,6 +14,9 @@ import android.view.SurfaceView;
 
 import com.google.android.glass.content.Intents;
 import com.medex.globals.LocalDataStore;
+import com.medex.globals.ParseUtil;
+
+import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
@@ -73,15 +76,18 @@ public class CameraActivity extends Activity {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		//super.onActivityResult(requestCode, resultCode, data);
 			if(resultCode == RESULT_OK) {
+
 				String picturePath = data.getStringExtra(Intents.EXTRA_PICTURE_FILE_PATH);
 				processPictureWhenReady(picturePath);
 				Log.d(TAG, "onActivityResult called. PicturePath is: " + picturePath);
-			}
 
+			}
+		startActivity(new Intent(CameraActivity.this, MenuActivity.class));
 		}
 
 	private void processPictureWhenReady(final String picturePath) {
 		Log.d(TAG, "processPictureWhenReady() called.");
+		ParseUtil util=new ParseUtil();
 		final File pictureFile = new File(picturePath);
 
 		if (pictureFile.exists()) {
@@ -89,6 +95,13 @@ public class CameraActivity extends Activity {
 			Log.d(TAG, "onActivityResult called. PicturePath is: " + picturePath);
 			// The picture is ready; process it - need to add to session images.
 			LocalDataStore.getInstance().currentSession.addImage(picturePath);
+			try {
+				boolean flag=util.postPatientDetails(CameraActivity.this);
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 		} else {
 			// The file does not exist yet. Before starting the file observer, you
 			// can update your UI to let the user know that the application is

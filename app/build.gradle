@@ -23,9 +23,23 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions{
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.google.android.gms:play-services-appindexing:8.4.0'
+    // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
+    compile 'com.loopj.android:android-async-http:1.4.9'
+    /* // compile group: 'org.apache.httpcomponents' , name: 'httpclient-android' , version: '4.3.5.1'
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.4'
+// https://mvnrepository.com/artifact/org.apache.httpcomponents/httpasyncclient
+    compile group: 'org.apache.httpcomponents', name: 'httpasyncclient', version: '4.0.1'
+    // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpcore
+    compile group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.4'
+*/
 }

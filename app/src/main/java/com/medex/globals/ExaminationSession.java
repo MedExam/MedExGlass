@@ -16,12 +16,12 @@ public class ExaminationSession implements Cloneable{
     private long stopTimestamp;
     private LinkedList<String> images = new LinkedList<String>();
     private LinkedList<String> videos = new LinkedList<String>();
+    private LinkedList<String> notes = new LinkedList<String>();
     private boolean isRunning;
     private JSONObject user;
     public Assessment assessment;
 
     public ExaminationSession(){}
-
     public ExaminationSession clone() {
         ExaminationSession e = new ExaminationSession();
         e.setStartTimestamp(this.getStartTimestamp());
@@ -62,6 +62,14 @@ public class ExaminationSession implements Cloneable{
         Log.d(TAG, "localDataStore_instance.currentSession.start() called completed. isRunning: " + this.isRunning);
     }
 
+    public LinkedList<String> getImages() {
+        return images;
+    }
+
+    public LinkedList<String> getNotes() {
+        return notes;
+    }
+
     public void stop()  {
         //debugging purposes - prints out all images path files stored for current session
         showCurrentImages();
@@ -73,6 +81,7 @@ public class ExaminationSession implements Cloneable{
         Log.d(TAG, "localDataStore_instance.currentSession.stop() called completed. isRunning: " + this.isRunning);
         //clear ALL DATA
         images.clear();
+
     }
 
     public boolean isRunning(){
@@ -84,6 +93,7 @@ public class ExaminationSession implements Cloneable{
         Log.d(TAG, "addImage().... adding String image filepath: " + filepath);
         this.images.add(filepath);
     }
+
 
     //debugging purposes - prints out all images path files stored for current session.
     public void showCurrentImages(){
