@@ -80,6 +80,7 @@ public class MainNotesActivity extends Activity {
 			card.setText(spokenText);
 			mCards.add(card);
 		}
+		finish();
 		//super.onActivityResult(requestCode, resultCode, data);
 	}
 

@@ -82,7 +82,7 @@ public class CameraActivity extends Activity {
 				Log.d(TAG, "onActivityResult called. PicturePath is: " + picturePath);
 
 			}
-		startActivity(new Intent(CameraActivity.this, MenuActivity.class));
+		finish();
 		}
 
 	private void processPictureWhenReady(final String picturePath) {

@@ -46,6 +46,7 @@ public class ParseUtil extends ServicesUtil {
         con = addHeaders(con);
         String data = getJSON(con);
         JSONObject json = new JSONObject(data);
+        System.out.println("Results - "+json.getJSONArray("results").toString());
         return json.getJSONArray("results");
     }
 

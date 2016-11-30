@@ -52,11 +52,13 @@ public class VoiceInputActivity extends Activity {
                         LocalDataStore.getInstance().currentSession.setUser((JSONObject) LocalDataStore.getInstance().patients.get(i));
                         LocalDataStore.getInstance().currentSession.start();
                         startActivity(new Intent(VoiceInputActivity.this, ExaminationTypeActivity.class));
+                        finish();
                     } else {
                         System.out.println("\n User Not Found \n");
                         cards.add(0, new CardBuilder(this, CardBuilder.Layout.TEXT).setText("User Not Found").setFootnote(""));
                         //Thread.sleep(10000);
-                        //startActivity(new Intent(VoiceInputActivity.this, UserActivity.class));
+                        startActivity(new Intent(VoiceInputActivity.this, UserActivity.class));
+                        finish();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

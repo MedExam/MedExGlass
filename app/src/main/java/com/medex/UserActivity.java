@@ -101,8 +101,17 @@ public class UserActivity extends Activity {
                 int soundEffect = Sounds.TAP;
                 LocalDataStore.getInstance().currentSession.start();
                 try {
-                        LocalDataStore.getInstance().currentSession.setUser((JSONObject) LocalDataStore.getInstance().patients.get(position));
-                        startActivity(new Intent(UserActivity.this, ExaminationTypeActivity.class));
+                    LocalDataStore.getInstance().currentSession.setUser((JSONObject) LocalDataStore.getInstance().patients.get(position));
+                    JSONObject user=LocalDataStore.getInstance().currentSession.getUser();
+                    JSONArray notes=user.getJSONArray("notes");
+                    for(int i=0;i<notes.length();i++){
+                        LocalDataStore.getInstance().currentSession.addNotes(((JSONObject)notes.get(i)).getString("text"));
+                    }
+                    JSONArray images=user.getJSONArray("images");
+                    for(int i=0;i<images.length();i++){
+                        LocalDataStore.getInstance().currentSession.addImage(((JSONObject)images.get(i)).getString("path"));
+                    }
+                    startActivity(new Intent(UserActivity.this, ExaminationTypeActivity.class));
                     }
                 catch (JSONException e) {
                     e.printStackTrace();
