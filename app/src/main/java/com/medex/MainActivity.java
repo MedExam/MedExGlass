@@ -51,7 +51,7 @@ public class MainActivity extends Activity {
             try {
                 LocalDataStore.getInstance().patients = ParseUtil.getPatients();
                 System.out.println("\nRunning BackGroung Fetch Service\n");
-                handler.postDelayed(this, 1200000);
+       //         handler.postDelayed(this, 1200000);
             }
             catch(Exception e){
                 e.printStackTrace();
@@ -89,7 +89,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        handler.postDelayed(runnable, 100);
+        handler.post(runnable);
         mCardScroller.activate();
     }
 

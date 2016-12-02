@@ -1,6 +1,4 @@
 package com.medex.globals;
-
-
 import android.content.Context;
 
 import com.loopj.android.http.AsyncHttpClient;
@@ -23,7 +21,6 @@ import javax.net.ssl.HttpsURLConnection;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.entity.StringEntity;
-
 
 public class ParseUtil extends ServicesUtil {
 

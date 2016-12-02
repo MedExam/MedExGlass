@@ -45,24 +45,37 @@ public class VoiceInputActivity extends Activity {
             //get text from voice recognizer
             List<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             String spokenText = results.get(0);
+            System.out.println("SpokenText"+spokenText);
             Boolean found = false;
             for (int i = 0; i < patients.length(); i++) {
                 try {
                     if ((((JSONObject) (patients.get(i))).getString("name")).equals(spokenText)) {
                         LocalDataStore.getInstance().currentSession.setUser((JSONObject) LocalDataStore.getInstance().patients.get(i));
+                        System.out.println("Value of i"+i+patients.get(i));
                         LocalDataStore.getInstance().currentSession.start();
                         found = true;
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
-                //
-
             }
             if (found){
-                startActivity(new Intent(VoiceInputActivity.this, ExaminationTypeActivity.class));
-                finish();
+                try {
+                    JSONObject user = LocalDataStore.getInstance().currentSession.getUser();
+                    JSONArray notes = user.getJSONArray("notes");
+                    for (int i = 0; i < notes.length(); i++) {
+                        LocalDataStore.getInstance().currentSession.addNotes(((JSONObject) notes.get(i)).getString("text"));
+                    }
+                    JSONArray images = user.getJSONArray("images");
+                    for (int i = 0; i < images.length(); i++) {
+                        LocalDataStore.getInstance().currentSession.addImage(((JSONObject) images.get(i)).getString("path"));
+                    }
+                    startActivity(new Intent(VoiceInputActivity.this, ExaminationTypeActivity.class));
+                    finish();
+                }
+                catch(Exception e){
+                    e.printStackTrace();
+                }
             }
             else{
                 System.out.println("\n User Not Found \n");

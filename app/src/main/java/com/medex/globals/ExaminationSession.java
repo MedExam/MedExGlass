@@ -36,6 +36,7 @@ public class ExaminationSession implements Cloneable{
     }
 
     public void setUser(JSONObject user) {
+        System.out.println("Setting user"+user);
         this.user = user;
     }
 
