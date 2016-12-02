@@ -45,20 +45,13 @@ public class VoiceInputActivity extends Activity {
             //get text from voice recognizer
             List<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             String spokenText = results.get(0);
-
+            Boolean found = false;
             for (int i = 0; i < patients.length(); i++) {
                 try {
                     if ((((JSONObject) (patients.get(i))).getString("name")).equals(spokenText)) {
                         LocalDataStore.getInstance().currentSession.setUser((JSONObject) LocalDataStore.getInstance().patients.get(i));
                         LocalDataStore.getInstance().currentSession.start();
-                        startActivity(new Intent(VoiceInputActivity.this, ExaminationTypeActivity.class));
-                        finish();
-                    } else {
-                        System.out.println("\n User Not Found \n");
-                        cards.add(0, new CardBuilder(this, CardBuilder.Layout.TEXT).setText("User Not Found").setFootnote(""));
-                        //Thread.sleep(10000);
-                        startActivity(new Intent(VoiceInputActivity.this, UserActivity.class));
-                        finish();
+                        found = true;
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -67,6 +60,17 @@ public class VoiceInputActivity extends Activity {
                 //
 
             }
+            if (found){
+                startActivity(new Intent(VoiceInputActivity.this, ExaminationTypeActivity.class));
+                finish();
+            }
+            else{
+                System.out.println("\n User Not Found \n");
+                cards.add(0, new CardBuilder(this, CardBuilder.Layout.TEXT).setText("User Not Found").setFootnote(""));
+                startActivity(new Intent(VoiceInputActivity.this, UserActivity.class));
+                finish();
+            }
+
         }
     }
 }

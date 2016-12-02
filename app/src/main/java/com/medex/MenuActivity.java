@@ -27,6 +27,8 @@ import java.util.List;
 import java.io.File;
 import android.os.FileObserver;
 
+import org.json.JSONException;
+
 public class MenuActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -34,9 +36,10 @@ public class MenuActivity extends Activity {
     // Visible for testing.
     static final int PERSONAL_DETAILS = 0;
     static final int ALLERGIES = 1;
-    static final int MEDICATIONS = 2;
-    static final int TAKE_AN_IMAGE = 3;
+//    static final int MEDICATIONS = 2;
+    static final int TAKE_AN_IMAGE = 2;
     static final int TAKE_NOTES = 4;
+    static final int SHOW_IMAGES = 3;
     //static final int SLIDER = 7;
     private CardScrollView mCardScroller;
 
@@ -55,17 +58,31 @@ public class MenuActivity extends Activity {
     }
     private List<CardBuilder> createCards(Context context) {
         ArrayList<CardBuilder> cards = new ArrayList<CardBuilder>();
+
         Patient patient = new Patient(LocalDataStore.getInstance().currentSession.getUser());
-        cards.add(PERSONAL_DETAILS, new CardBuilder(this, CardBuilder.Layout.TEXT)
-                .setText("Patient Details\n" + patient.toStringMetadata()));
+        try {
+            if(LocalDataStore.getInstance().currentSession.getUser().getString("gender").equals("F"))
+                cards.add(PERSONAL_DETAILS, new CardBuilder(this, CardBuilder.Layout.COLUMNS_FIXED)
+                        .setText("Patient Details\n" + patient.toStringMetadata())
+                        .setIcon(R.drawable.girl));
+            else
+                cards.add(PERSONAL_DETAILS, new CardBuilder(this, CardBuilder.Layout.COLUMNS_FIXED)
+                        .setText("Patient Details\n" + patient.toStringMetadata())
+                        .setIcon(R.drawable.boy));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         cards.add(ALLERGIES, new CardBuilder(this, CardBuilder.Layout.TEXT)
-                .setText("Allergies\n"+ patient.toStringAllergies()));
-        cards.add(MEDICATIONS, new CardBuilder(this, CardBuilder.Layout.TEXT)
-                .setText("Medications\n" + patient.toStringMedications()));
-        cards.add(TAKE_AN_IMAGE, new CardBuilder(this, CardBuilder.Layout.TEXT)
-                .setText("Take image"));
-        cards.add(TAKE_NOTES, new CardBuilder(this, CardBuilder.Layout.TEXT)
-                .setText("Notes"));
+                .setText("Allergies\n"+patient.toStringAllergies()+"\n"+"\nMedications\n"+patient.toStringMedications()));
+
+        cards.add(TAKE_AN_IMAGE, new CardBuilder(this, CardBuilder.Layout.MENU)
+                .setText("Take image").setIcon(R.drawable.ic_menu_camera));
+        cards.add(SHOW_IMAGES, new CardBuilder(this, CardBuilder.Layout.MENU)
+                .setIcon(R.drawable.ic_menu_camera)
+                .setText("Show Images").setFootnote("Shows previously recorded images"));
+        cards.add(TAKE_NOTES, new CardBuilder(this, CardBuilder.Layout.MENU)
+                .setIcon(R.drawable.sym_action_chat)
+                .setText("Show Notes").setFootnote("Long Tap to add new note"));
 
 
 //        cards.add(STREAM, new CardBuilder(this, CardBuilder.Layout.TEXT)
@@ -103,6 +120,11 @@ public class MenuActivity extends Activity {
                     case TAKE_NOTES:
                         Log.d(TAG, "Taking Notes!");
                       startActivity(new Intent(MenuActivity.this, MainNotesActivity.class));
+                        break;
+                    case SHOW_IMAGES:
+                        Log.d(TAG, "Taking an image!");
+                        startActivity(new Intent(MenuActivity.this, ExaminationImagesActivity.class));
+                        //takePicture();
                         break;
                     case TAKE_AN_IMAGE:
                         Log.d(TAG, "Taking an image!");

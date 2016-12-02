@@ -62,10 +62,19 @@ public class UserActivity extends Activity {
 
             for(int i = 0; i < patients.length(); i++)
             {
-                cards.add(i,new CardBuilder(this, CardBuilder.Layout.COLUMNS)
-                        .setText(((JSONObject)(patients.get(i))).getString("name") + "\n" +("M:"+((JSONObject)(patients.get(i))).getString("phoneNumber")))
-                        .setTimestamp(((JSONObject)(patients.get(i))).getString("emailId"))
-                        .setIcon(R.drawable.ic_glass_lincoln));
+                if(((JSONObject)(patients.get(i))).has("gender") && ((JSONObject)(patients.get(i))).getString("gender").equals("F"))
+                    cards.add(i,new CardBuilder(this, CardBuilder.Layout.COLUMNS_FIXED)
+                            .setText(((JSONObject)(patients.get(i))).getString("name") + "\nFemale" )
+                            .setFootnote(((JSONObject)(patients.get(i))).getString("phoneNumber"))
+                            .setTimestamp(((JSONObject)(patients.get(i))).getString("emailId"))
+                            .setIcon(R.drawable.girl));
+                else
+
+                    cards.add(i,new CardBuilder(this, CardBuilder.Layout.COLUMNS_FIXED)
+                            .setText(((JSONObject)(patients.get(i))).getString("name") + "\nMale" )
+                            .setFootnote(((JSONObject)(patients.get(i))).getString("phoneNumber"))
+                            .setTimestamp(((JSONObject)(patients.get(i))).getString("emailId"))
+                            .setIcon(R.drawable.boy));
             }
         } catch (Exception e) {
             e.printStackTrace();

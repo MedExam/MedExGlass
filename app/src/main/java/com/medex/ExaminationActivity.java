@@ -22,9 +22,10 @@ import java.util.List;
 public class ExaminationActivity extends Activity {
     private static final String TAG = ExaminationActivity.class.getSimpleName();
 
-    static final int START = 0;
-    static final int WATCH_DEMO_VIDEO = 1;
-    static final int SET_PATIENT = 2;
+//    static final int START = 0;
+//    static final int WATCH_DEMO_VIDEO = 1;
+    static final int SET_PATIENT = 1;
+    static final int SELECT_PATIENT = 0;
     private CardScrollView mCardScroller;
 
     private View mView;
@@ -49,16 +50,20 @@ public class ExaminationActivity extends Activity {
     private List<CardBuilder> createCards(Context context) {
         ArrayList<CardBuilder> cards = new ArrayList<CardBuilder>();
         String footnote = new String();
-        if(!LocalDataStore.getInstance().currentSession.isRunning())
-            cards.add(START, new CardBuilder(this, CardBuilder.Layout.TEXT)
-                    .setText("Start a new examination session").setFootnote(""));
-        else
-            cards.add(START, new CardBuilder(this, CardBuilder.Layout.TEXT)
-                    .setText("Stop the current examination session").setFootnote(""));
-        cards.add(WATCH_DEMO_VIDEO, new CardBuilder(this, CardBuilder.Layout.TEXT)
-                .setText("Get STarted").setFootnote("Tap to see demo"));
-        cards.add(SET_PATIENT, new CardBuilder(this, CardBuilder.Layout.TEXT)
-                .setText("SET PATIENT").setFootnote(""));
+//        if(!LocalDataStore.getInstance().currentSession.isRunning())
+//            cards.add(START, new CardBuilder(this, CardBuilder.Layout.TEXT)
+//                    .setText("Start a new examination session").setFootnote(""));
+//        else
+//            cards.add(START, new CardBuilder(this, CardBuilder.Layout.TEXT)
+//                    .setText("Stop the current examination session").setFootnote(""));
+//        cards.add(WATCH_DEMO_VIDEO, new CardBuilder(this, CardBuilder.Layout.TEXT)
+//                .setText("Get STarted").setFootnote("Tap to see demo"));
+
+        cards.add(SELECT_PATIENT, new CardBuilder(this, CardBuilder.Layout.MENU)
+                .setIcon(R.drawable.ic_menu_allfriends)
+                .setText("SELECT PATIENT").setFootnote(" Swipe for using voice input selection"));
+        cards.add(SET_PATIENT, new CardBuilder(this, CardBuilder.Layout.MENU)
+                .setText("SET PATIENT").setFootnote("Using Voice Input."));
         return cards;
     }
 
@@ -70,32 +75,6 @@ public class ExaminationActivity extends Activity {
         }
     }
 
-    private void refreshCards() {
-//        String footnote;
-//        for(int position =0; position< mAdapter.getCount();position++){
-//            switch (position){
-//                case START:
-//                    System.out.println("onresume START sessionRunning:" + localDataStore_instance.currentSession.isRunning());
-//                     footnote = new String();
-//                    if(localDataStore_instance.currentSession.isRunning())
-//                        footnote = new String("A session is in progress. Stop to start new session.");
-//                    ((CardBuilder)(mAdapter.getItem(position))).setFootnote(footnote);
-//                    break;
-//                case STOP:
-//                    System.out.println("onresume STOP sessionRunning:" + localDataStore_instance.currentSession.isRunning());
-//                     footnote = new String();
-//                    if(!localDataStore_instance.currentSession.isRunning())
-//                        footnote = new String("No active session");
-//                    else
-//                        footnote = new String();
-//
-//                    ((CardBuilder)(mAdapter.getItem(position))).setFootnote(footnote);
-//                    break;
-//            }
-//
-//        }
-//        mAdapter.notifyDataSetChanged();
-    }
 
     @Override
     protected void onPause() {
@@ -117,15 +96,18 @@ public class ExaminationActivity extends Activity {
                 Log.d(TAG, "Clicked view at position " + position + ", row-id " + id);
                 int soundEffect = Sounds.TAP;
                 switch (position) {
-                    case START:
-                            startActivity(new Intent(ExaminationActivity.this, UserActivity.class));
-                        break;
-
-                    case WATCH_DEMO_VIDEO:
-                        break;
+//                    case START:
+//                            startActivity(new Intent(ExaminationActivity.this, UserActivity.class));
+//                        break;
+//
+//                    case WATCH_DEMO_VIDEO:
+//                        break;
 
                     case SET_PATIENT:
                         startActivity(new Intent(ExaminationActivity.this, VoiceInputActivity.class));
+                        break;
+                    case SELECT_PATIENT:
+                        startActivity(new Intent(ExaminationActivity.this, UserActivity.class));
                         break;
 
                     default:

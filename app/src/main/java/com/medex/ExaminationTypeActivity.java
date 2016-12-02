@@ -57,12 +57,12 @@ public class ExaminationTypeActivity extends Activity {
     private List<CardBuilder> createCards(Context context) {
         ArrayList<CardBuilder> cards = new ArrayList<CardBuilder>();
 
-        cards.add(EHR, new CardBuilder(this, CardBuilder.Layout.TEXT)
-                .setText("General Examination").setFootnote(""));
-        cards.add(ASSESSMENT, new CardBuilder(this, CardBuilder.Layout.TEXT)
-                .setText("Start an assessment").setFootnote(""));
-        cards.add(STOP, new CardBuilder(this, CardBuilder.Layout.TEXT)
-                .setText("Stop the current examination session").setFootnote(""));
+        cards.add(EHR, new CardBuilder(this, CardBuilder.Layout.MENU)
+                .setText("General Examination").setFootnote(" Shows details and options to add images, notes"));
+        cards.add(ASSESSMENT, new CardBuilder(this, CardBuilder.Layout.MENU)
+                .setText("Start Assessment").setFootnote(" Start a new question/answer session"));
+        cards.add(STOP, new CardBuilder(this, CardBuilder.Layout.MENU)
+                .setText("Stop Examination ").setFootnote(""));
         return cards;
     }
 

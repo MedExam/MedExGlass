@@ -1,6 +1,7 @@
 package com.medex.dto;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.*;
 
@@ -17,13 +18,18 @@ public class Patient {
 
     public String toStringMetadata() {
         StringBuilder sb = new StringBuilder();
+        try {
+            sb.append(this.jsonObject.get("gender")+"\n");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         if (this.jsonObject.has("metadata")) {
             try {
                 JSONObject metadata = (JSONObject) this.jsonObject.get("metadata");
                 Iterator keys = metadata.keys();
                 while (keys.hasNext()) {
                     String key = (String) keys.next();
-                    sb.append(key + "\t" + metadata.get(key ));
+                    sb.append(key + "   " + metadata.get(key ));
                     sb.append("\n");
                 }
             } catch (Exception e) {
@@ -43,9 +49,11 @@ public class Patient {
                 if (length > 0) {
                     for (int i = 0; i < length; i++) {
                         sb.append(allergies.getString(i));
-                        sb.append("\n");
+                        if(i <length-1)
+                            sb.append(", ");
                     }
                 }
+
             } catch (Exception e) {
                 System.out.println("toStringAllergies: " + e.getMessage());
             }
@@ -63,7 +71,8 @@ public class Patient {
                 if (length > 0) {
                     for (int i = 0; i < length; i++) {
                         sb.append(medications.getString(i));
-                        sb.append("\n");
+                        if(i <length-1)
+                            sb.append(", ");
                     }
                 }
             } catch (Exception e) {

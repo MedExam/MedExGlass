@@ -75,6 +75,8 @@
             android:name=".UserActivity"
             android:icon="@drawable/ic_glass_logo"
             android:label="@string/title_activity_main"/>
+        <activity
+            android:name=".ExaminationImagesActivity"/>
         <activity android:name=".AssessmentActivity"/>
         <activity android:name=".AssessmentSubTypeActivity"/>
         <activity android:name=".AssessmentTypeActivity"/>
