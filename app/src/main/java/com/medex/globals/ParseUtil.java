@@ -14,6 +14,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -40,7 +41,6 @@ public class ParseUtil extends ServicesUtil {
     }
 
     static String PATIENTS_SVC = "https://med-ex.herokuapp.com/parse/classes/Patients";
-
     public static JSONArray getPatients() throws IOException, JSONException {
         HttpsURLConnection con = getConnectionObject(ParseUtil.PATIENTS_SVC);
         con = addHeaders(con);
@@ -61,7 +61,6 @@ public class ParseUtil extends ServicesUtil {
     }
 
     static String QUESTIONNAIRE_SVC = "https://med-ex.herokuapp.com/parse/classes/Questionnaire?where=";
-
     public static JSONArray getQuestionnaire() throws IOException, JSONException {
         Assessment a = LocalDataStore.getInstance().currentSession.assessment;
         JSONObject json = new JSONObject();
