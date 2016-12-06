@@ -14,10 +14,13 @@ public class LocalDataStore {
     public static LinkedList<ExaminationSession> completedSessions;
     public static ExaminationSession currentSession;
     public static JSONArray patients;
+    public static HashMap<String,String> examinations;
     public static JSONObject questionnaire;
     public static HashMap<String,ArrayList<String>> assessment_info;
 
+
     //Leave Empty Constructor for Singleton pattern
+
     private LocalDataStore(){}
 
     public synchronized static LocalDataStore getInstance(){

@@ -62,6 +62,11 @@
         <activity android:name=".AssessmentActivity"/>
         <activity android:name=".AssessmentSubTypeActivity"/>
         <activity android:name=".AssessmentTypeActivity"/>
+        <activity android:name=".AssessmentView_StartActivity"/>
+        <activity android:name=".ViewAssessmentActivity"/>
+        <activity android:name=".ScoresActivity"/>
+        <activity android:name=".ViewListAssessmentActivity"/>
+        <activity android:name=".MessageActivity"/>
          <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />

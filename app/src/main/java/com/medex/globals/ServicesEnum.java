@@ -8,6 +8,7 @@ import javax.net.ssl.HttpsURLConnection;
 public enum ServicesEnum {
     GET_PATIENTS,
     GET_ASSESSMENTS,
-    GET_QUESTIONNAIRE
+    GET_QUESTIONNAIRE,
+    GET_SCORE
 
 }

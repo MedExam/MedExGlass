@@ -22,6 +22,7 @@ import com.medex.globals.ParseUtil;
 import com.medex.globals.ServicesEnum;
 import com.medex.globals.ServicesUtil;
 import com.medex.globals.ThreadUtil;
+import com.medex.globals.Utilities;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -112,14 +113,13 @@ public class UserActivity extends Activity {
                 try {
                     LocalDataStore.getInstance().currentSession.setUser((JSONObject) LocalDataStore.getInstance().patients.get(position));
                     JSONObject user=LocalDataStore.getInstance().currentSession.getUser();
-                    JSONArray notes=user.getJSONArray("notes");
-                    for(int i=0;i<notes.length();i++){
-                        LocalDataStore.getInstance().currentSession.addNotes(((JSONObject)notes.get(i)).getString("text"));
-                    }
-                    JSONArray images=user.getJSONArray("images");
-                    for(int i=0;i<images.length();i++){
-                        LocalDataStore.getInstance().currentSession.addImage(((JSONObject)images.get(i)).getString("path"));
-                    }
+                    JSONArray notes = user.getJSONArray("notes");
+                    LocalDataStore.getInstance().currentSession.setNotes(Utilities.jsonArrayToLinkedList(notes));
+                    JSONArray assessments = user.getJSONArray("assessments");
+                    LocalDataStore.getInstance().currentSession.setCompletedAssessments(Utilities.jsonArrayToLinkedList(assessments));
+                    JSONArray images = user.getJSONArray("images");
+                    LocalDataStore.getInstance().currentSession.setImages(Utilities.jsonArrayToLinkedList(images));
+
                     startActivity(new Intent(UserActivity.this, ExaminationTypeActivity.class));
                     }
                 catch (JSONException e) {

@@ -16,12 +16,14 @@ import com.google.android.glass.widget.CardScrollAdapter;
 import com.google.android.glass.widget.CardScrollView;
 import com.medex.cards.CardAdapter;
 import com.medex.globals.LocalDataStore;
+import com.medex.globals.ParseUtil;
 import com.medex.globals.ServicesEnum;
 import com.medex.globals.ThreadUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -34,7 +36,7 @@ public class AssessmentActivity extends Activity {
     private CardScrollAdapter mAdapter;
 
     private LocalDataStore localDataStore_instance;
-    private int Number_of_answers = 0;
+    private int Number_of_question_answers = 0;
     private ArrayList<String> question_answer = new ArrayList<String>();
 
     @Override
@@ -70,17 +72,12 @@ public class AssessmentActivity extends Activity {
             JSONObject q =  localDataStore.questionnaire;
             if(q.length() == 0){
                 cards.add(i++, new CardBuilder(this, CardBuilder.Layout.TEXT)
-                        .setText("Assessment Completed").setFootnote("You can still add notes"));
-                cards.add(i++, new CardBuilder(this, CardBuilder.Layout.TEXT)
-                        .setText("Add note"));
-
-                cards.add(i++, new CardBuilder(this, CardBuilder.Layout.TEXT)
-                        .setText("Cancel assessment").setFootnote("This will delete all observations in the current assessment"));
-                Number_of_answers = 0;
+                        .setText("Assessment Completed").setFootnote("Tap to exit "));
+                Number_of_question_answers = 0;
             }
             else {
                 cards.add(i++, new CardBuilder(this, CardBuilder.Layout.TEXT)
-                        .setText((String) LocalDataStore.getInstance().questionnaire.get("question")));
+                        .setText((String) LocalDataStore.getInstance().questionnaire.get("question")).setFootnote("Swipe right to record observations"));
                 question_answer.add((String) LocalDataStore.getInstance().questionnaire.get("question"));
                 JSONObject answers = (JSONObject) LocalDataStore.getInstance().questionnaire.get("answers");
                 Iterator keys = answers.keys();
@@ -88,15 +85,11 @@ public class AssessmentActivity extends Activity {
                     String answer = (String) keys.next();
                     question_answer.add(answer);
                     cards.add(i++, new CardBuilder(this, CardBuilder.Layout.TEXT)
-                            .setText(answer));
+                            .setText(answer).setFootnote("Tap to record. Swipe right for more"));
                 }
-
-                cards.add(i++, new CardBuilder(this, CardBuilder.Layout.TEXT)
-                        .setText("Add note"));
-
-                cards.add(i++, new CardBuilder(this, CardBuilder.Layout.TEXT)
-                        .setText("Cancel assessment").setFootnote("This will delete all observations in the current assessment"));
-                Number_of_answers = i - 3;
+                cards.add(i, new CardBuilder(this, CardBuilder.Layout.MENU)
+                        .setText("Finish assessment").setFootnote("This will stop the assessment"));
+                Number_of_question_answers = i ;
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -133,14 +126,24 @@ public class AssessmentActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d(TAG, "Clicked view at position " + position + ", row-id " + id);
                 int soundEffect = Sounds.TAP;
-                if(position == Number_of_answers + 1){
+                try {
+                if(position == Number_of_question_answers ){
 
-                }
-                else if(position == Number_of_answers + 2){
+                    if(LocalDataStore.getInstance().currentSession.assessment.getQuestion_answers().size()>0) {
+                        (new ParseUtil()).postPatientDetails(AssessmentActivity.this);
+                        LocalDataStore.getInstance().currentSession.stopAssessment();
+                    }
+                    else
+                        LocalDataStore.getInstance().currentSession.cancelAssessment();
 
+                    finish();
                 }
                 else if(position == 0){
-
+                        if(Number_of_question_answers == 0) {
+                            LocalDataStore.getInstance().currentSession.stopAssessment();
+                            (new ParseUtil()).postPatientDetails(AssessmentActivity.this);
+                            finish();
+                        }
                 }
                 else{
                     LocalDataStore.getInstance().currentSession.assessment.add(question_answer.get(0),question_answer.get(position));
@@ -152,6 +155,11 @@ public class AssessmentActivity extends Activity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
 
                 // Play sound.

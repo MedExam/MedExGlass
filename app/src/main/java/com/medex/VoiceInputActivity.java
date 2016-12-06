@@ -9,6 +9,7 @@ import android.view.View;
 import com.google.android.glass.app.Card;
 import com.google.android.glass.widget.CardBuilder;
 import com.medex.globals.LocalDataStore;
+import com.medex.globals.Utilities;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -49,7 +50,7 @@ public class VoiceInputActivity extends Activity {
             Boolean found = false;
             for (int i = 0; i < patients.length(); i++) {
                 try {
-                    if ((((JSONObject) (patients.get(i))).getString("name")).equals(spokenText)) {
+                    if ((((JSONObject) (patients.get(i))).getString("name")).contains(spokenText)) {
                         LocalDataStore.getInstance().currentSession.setUser((JSONObject) LocalDataStore.getInstance().patients.get(i));
                         System.out.println("Value of i"+i+patients.get(i));
                         LocalDataStore.getInstance().currentSession.start();
@@ -63,24 +64,25 @@ public class VoiceInputActivity extends Activity {
                 try {
                     JSONObject user = LocalDataStore.getInstance().currentSession.getUser();
                     JSONArray notes = user.getJSONArray("notes");
-                    for (int i = 0; i < notes.length(); i++) {
-                        LocalDataStore.getInstance().currentSession.addNotes(((JSONObject) notes.get(i)).getString("text"));
-                    }
+                    LocalDataStore.getInstance().currentSession.setNotes(Utilities.jsonArrayToLinkedList(notes));
+                    JSONArray assessments = user.getJSONArray("assessments");
+                    LocalDataStore.getInstance().currentSession.setCompletedAssessments(Utilities.jsonArrayToLinkedList(assessments));
                     JSONArray images = user.getJSONArray("images");
-                    for (int i = 0; i < images.length(); i++) {
-                        LocalDataStore.getInstance().currentSession.addImage(((JSONObject) images.get(i)).getString("path"));
-                    }
+                    LocalDataStore.getInstance().currentSession.setImages(Utilities.jsonArrayToLinkedList(images));
+
                     startActivity(new Intent(VoiceInputActivity.this, ExaminationTypeActivity.class));
                     finish();
                 }
                 catch(Exception e){
-                    e.printStackTrace();
+                    System.out.println("\n User Not Found \n");
+                    startActivity(new Intent(VoiceInputActivity.this, MessageActivity.class));
+                    finish();
+                }
                 }
             }
             else{
                 System.out.println("\n User Not Found \n");
-                cards.add(0, new CardBuilder(this, CardBuilder.Layout.TEXT).setText("User Not Found").setFootnote(""));
-                startActivity(new Intent(VoiceInputActivity.this, UserActivity.class));
+                startActivity(new Intent(VoiceInputActivity.this, MessageActivity.class));
                 finish();
             }
 

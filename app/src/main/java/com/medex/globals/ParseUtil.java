@@ -47,6 +47,23 @@ public class ParseUtil extends ServicesUtil {
         return json.getJSONArray("results");
     }
 
+    static String EXAMINATION_SVC = "https://med-ex.herokuapp.com/parse/classes/Examinations";
+    public static HashMap<String,String> getExaminations() throws IOException, JSONException {
+        HttpsURLConnection con = getConnectionObject(ParseUtil.EXAMINATION_SVC);
+        con = addHeaders(con);
+        String data = getJSON(con);
+        JSONObject json = new JSONObject(data);
+        System.out.println("Results - "+json.getJSONArray("results").toString());
+        JSONArray e = json.getJSONArray("results");
+        HashMap<String,String> exam = new HashMap<String, String>();
+        for(int i = 0;i<e.length();i++)
+            if(((JSONObject)(e.get(i))).has("imageFile"))
+            exam.put(((JSONObject)(e.get(i))).getString("objectId"),((JSONObject)(e.get(i))).getJSONObject("imageFile").getString("url"));
+        return exam;
+
+    }
+
+
     static String ASSESSMENT_INFO_SVC = "https://med-ex.herokuapp.com/parse/classes/AssessmentInfo";
 
     public static JSONArray getAssessmentInfo() throws IOException, JSONException {
@@ -74,28 +91,26 @@ public class ParseUtil extends ServicesUtil {
     //static String PATIENTS_SVC_POST = "https://api.mlab.com/api/1/databases/heroku_v1w06qjt/collections/Patients?f=";
     static String PATIENTS_SVC_POST = "https://api.mlab.com/api/1/databases/heroku_v1w06qjt/collections/Patients?apiKey=";
     public boolean postPatientDetails(Context context) throws IOException, JSONException {
-        JSONArray imagesarray = new JSONArray();
-        JSONArray notesarray = new JSONArray();
         JSONObject jsonobject=new JSONObject();
         JSONObject updateobject=new JSONObject();
-        LinkedList<String> images = LocalDataStore.getInstance().currentSession.getImages();
-        LinkedList<String> notes = LocalDataStore.getInstance().currentSession.getNotes();
-        for (String img : images) {
-            System.out.println("Images- "+img);
-            JSONObject image = new JSONObject();
-            image.put("path", img);
-            imagesarray.put(image);
-        }
+        JSONArray imagesarray = Utilities.LinkedListTOJSONArray(LocalDataStore.getInstance().currentSession.getImages());
+        JSONArray notesarray = Utilities.LinkedListTOJSONArray(LocalDataStore.getInstance().currentSession.getNotes());
+        JSONArray assessmentarray = Utilities.LinkedListTOJSONArray(LocalDataStore.getInstance().currentSession.completedAssessments);
+        JSONArray examinationarray ;
+        if(LocalDataStore.getInstance().currentSession.getUser().has("examinations")){
+            examinationarray = new JSONArray();
+            examinationarray = LocalDataStore.getInstance().currentSession.getUser().getJSONArray("examinations");
 
-        for (String not : notes) {
-            JSONObject note = new JSONObject();
-            note.put("text", not);
-            notesarray.put(note);
+        }
+        else{
+            examinationarray = new JSONArray();
         }
 
         //Updating the JSON
         jsonobject.put("images",imagesarray);
         jsonobject.put("notes",notesarray);
+        jsonobject.put("assessments",assessmentarray);
+        jsonobject.put("examinations",examinationarray);
         updateobject.put("$set",jsonobject);
 
         String name = LocalDataStore.getInstance().currentSession.getUser().getString("name");
@@ -105,6 +120,8 @@ public class ParseUtil extends ServicesUtil {
         jsonobj.put("name", 1);
         jsonobj.put("images", 1);
         jsonobj.put("notes", 1);
+        jsonobj.put("assessments", 1);
+        jsonobj.put("examinations", 1);
         String apikey="PsFa5SuAaCuE3mmkiOEGbL8GV-VmQcdI";
         /*String url =PATIENTS_SVC_POST+URLEncoder.encode(jsonobj.toString(),"UTF-8")+"&apiKey="+URLEncoder.encode(apikey,"UTF-8")
                 +"&q="+URLEncoder.encode(json.toString(),"UTF-8");*/

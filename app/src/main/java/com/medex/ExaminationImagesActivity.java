@@ -22,6 +22,9 @@ import com.google.android.glass.widget.CardScrollView;
 import com.medex.cards.CardAdapter;
 import com.medex.globals.LocalDataStore;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,7 +44,7 @@ public class ExaminationImagesActivity extends Activity {
         super.onCreate(bundle);
 
         mAdapter = new CardAdapter(createCards(this));
-        mGestureDetector = createGestureDetector(this);
+//        mGestureDetector = createGestureDetector(this);
         mCardScroller = new CardScrollView(this);
         mCardScroller.setAdapter(mAdapter);
 
@@ -59,58 +62,66 @@ public class ExaminationImagesActivity extends Activity {
         return super.onKeyDown(keycode, event);
     }
 
-    private GestureDetector createGestureDetector(final Context context) {
-        GestureDetector gestureDetector = new GestureDetector(context);
-        //Create a base listener for generic gestures
-        gestureDetector.setBaseListener( new GestureDetector.BaseListener() {
-            @Override
-            public boolean onGesture(Gesture gesture) {
-                if (gesture == Gesture.SWIPE_RIGHT) {
-                    if(imageNo < LocalDataStore.getInstance().currentSession.getImages().size()){
-                        File pictureFile = new File(LocalDataStore.getInstance().currentSession.getImages().get(imageNo++));
-                        if (pictureFile.exists()) {
-                            Bitmap myBitmap = BitmapFactory.decodeFile(pictureFile.getAbsolutePath());
-
-                            myBitmap = Bitmap.createScaledBitmap(myBitmap, 640, 360, false);
-                            mCardScroller.addView( new CardBuilder(context, CardBuilder.Layout.CAPTION)
-                                    .addImage(myBitmap)
-                                    .setText("")
-                                    .getView());
-                        }
-                    }
-
-                    // do something on right (forward) swipe
-                    return true;
-                }
-                return false;
-            }
-        });
-        return gestureDetector;
-    }
+//    private GestureDetector createGestureDetector(final Context context) {
+//        GestureDetector gestureDetector = new GestureDetector(context);
+//        //Create a base listener for generic gestures
+//        gestureDetector.setBaseListener( new GestureDetector.BaseListener() {
+//            @Override
+//            public boolean onGesture(Gesture gesture) {
+//                if (gesture == Gesture.SWIPE_RIGHT) {
+//                    if(imageNo < LocalDataStore.getInstance().currentSession.getImages().size()){
+//                        File pictureFile = new File(LocalDataStore.getInstance().currentSession.getImages().get(imageNo++));
+//                        if (pictureFile.exists()) {
+//                            Bitmap myBitmap = BitmapFactory.decodeFile(pictureFile.getAbsolutePath());
+//
+//                            myBitmap = Bitmap.createScaledBitmap(myBitmap, 640, 360, false);
+//                            mCardScroller.addView( new CardBuilder(context, CardBuilder.Layout.CAPTION)
+//                                    .addImage(myBitmap)
+//                                    .setText("")
+//                                    .getView());
+//                        }
+//                    }
+//
+//                    // do something on right (forward) swipe
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
+//        return gestureDetector;
+//    }
 
     private List<CardBuilder> createCards(Context context) {
         ArrayList<CardBuilder> cards = new ArrayList<CardBuilder>();
 
-        LinkedList<String> images = LocalDataStore.getInstance().currentSession.getImages();
+        LinkedList<JSONObject> images = LocalDataStore.getInstance().currentSession.getImages();
         int i = 0;
         if(images.size() == 0)
             cards.add(i, new CardBuilder(this, CardBuilder.Layout.MENU)
 //                    .addImage(myBitmap)
                     .setText("No Images"));
+
         else{
 //                File pictureFile = new File(images.get(imageNo++));
-            for(String image: images) {
+            for(JSONObject image: images) {
 //                File pictureFile = new File(images.get(imageNo++));
-                File pictureFile = new File(image);
+                File pictureFile = null;
+                System.out.println(image);
+                try {
+                    pictureFile = new File(image.getString("path"));
+                    if (pictureFile.exists()) {
+                        Bitmap myBitmap = BitmapFactory.decodeFile(pictureFile.getAbsolutePath());
 
-                if (pictureFile.exists()) {
-                    Bitmap myBitmap = BitmapFactory.decodeFile(pictureFile.getAbsolutePath());
-
-                    myBitmap = Bitmap.createScaledBitmap(myBitmap, 640, 360, false);
-                    cards.add(i++, new CardBuilder(this, CardBuilder.Layout.CAPTION)
-                            .addImage(myBitmap)
-                            .setText(""));
+                        myBitmap = Bitmap.createScaledBitmap(myBitmap, 640, 360, false);
+                        cards.add(i++, new CardBuilder(this, CardBuilder.Layout.CAPTION)
+                                .addImage(myBitmap)
+                                .setText(image.getString("timestamp")));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
+
+
             }
         }
 

@@ -2,8 +2,10 @@ package com.medex.globals;
 
 import android.util.Log;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -14,20 +16,39 @@ public class ExaminationSession implements Cloneable{
 
     private long startTimestamp;
     private long stopTimestamp;
-    private LinkedList<String> images = new LinkedList<String>();
-    private LinkedList<String> videos = new LinkedList<String>();
-    private LinkedList<String> notes = new LinkedList<String>();
+
+    public void setNotes(LinkedList<JSONObject> notes) {
+        this.notes = notes;
+    }
+
+    public void setImages(LinkedList<JSONObject> images) {
+        this.images = images;
+    }
+
+    public void setVideos(LinkedList<JSONObject> videos) {
+        this.videos = videos;
+    }
+
+    public void setCompletedAssessments(LinkedList<JSONObject> completedAssessments) {
+        this.completedAssessments = completedAssessments;
+    }
+
+    private LinkedList<JSONObject> images = new LinkedList<JSONObject>();
+    private LinkedList<JSONObject> videos = new LinkedList<JSONObject>();
+    private LinkedList<JSONObject> notes = new LinkedList<JSONObject>();
     private boolean isRunning;
     private JSONObject user;
     public Assessment assessment;
+    public LinkedList<JSONObject> completedAssessments = new LinkedList<JSONObject>();
 
     public ExaminationSession(){}
     public ExaminationSession clone() {
         ExaminationSession e = new ExaminationSession();
         e.setStartTimestamp(this.getStartTimestamp());
         e.setStopTimestamp(this.getStopTimestamp());
-        e.images = (LinkedList<String>) this.images.clone();
-        e.videos = (LinkedList<String>) this.videos.clone();
+        e.images = (LinkedList<JSONObject>) this.images.clone();
+        e.videos = (LinkedList<JSONObject>) this.videos.clone();
+        e.notes = (LinkedList<JSONObject>) this.notes.clone();
         return e;
     }
 
@@ -63,11 +84,11 @@ public class ExaminationSession implements Cloneable{
         Log.d(TAG, "localDataStore_instance.currentSession.start() called completed. isRunning: " + this.isRunning);
     }
 
-    public LinkedList<String> getImages() {
+    public LinkedList<JSONObject> getImages() {
         return images;
     }
 
-    public LinkedList<String> getNotes() {
+    public LinkedList<JSONObject> getNotes() {
         return notes;
     }
 
@@ -85,6 +106,18 @@ public class ExaminationSession implements Cloneable{
 
     }
 
+    public void stopAssessment(){
+        this.completedAssessments.add(0,this.assessment.toJSONObject());
+        this.assessment = new Assessment();
+
+    }
+    public void cancelAssessment(){
+        this.assessment = new Assessment();
+
+    }
+
+
+
     public boolean isRunning(){
         return this.isRunning;
     }
@@ -92,13 +125,31 @@ public class ExaminationSession implements Cloneable{
     //store imagePath to images
     public void addImage(String filepath){
         Log.d(TAG, "addImage().... adding String image filepath: " + filepath);
-        this.images.add(filepath);
+        JSONObject json = new JSONObject();
+        System.out.println("added ...");
+        try {
+            json.put("path",filepath);
+            json.put("timestamp",new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()));
+            System.out.println("added");
+            this.images.add(0,json);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     //store imagePath to images
     public void addNotes(String note){
         Log.d(TAG, "addNotes.... adding Notes " + note);
-        this.notes.add(note);
+        JSONObject json = new JSONObject();
+        try {
+            json.put("text",note);
+            json.put("timestamp",new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()));
+            this.notes.add(0,json);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -114,7 +165,14 @@ public class ExaminationSession implements Cloneable{
     }
 
     public void addVideo(String filepath){
-        this.videos.add(filepath);
+        JSONObject json = new JSONObject();
+        try {
+            json.put("path",filepath);
+            json.put("timestamp",new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()));
+            this.images.add(0,json);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 

@@ -56,7 +56,7 @@ public class AssessmentSubTypeActivity extends Activity {
         Iterator iter = assessmentSubTypes.iterator();
         int i = 0;
         while(iter.hasNext()){
-            cards.add(i++, new CardBuilder(this, CardBuilder.Layout.TEXT)
+            cards.add(i++, new CardBuilder(this, CardBuilder.Layout.MENU)
                 .setText( (String) iter.next()));
         }
 //        cards.add(RECORD_VIDEO, new CardBuilder(this, CardBuilder.Layout.TEXT)

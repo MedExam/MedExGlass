@@ -60,9 +60,9 @@ public class ExaminationTypeActivity extends Activity {
         cards.add(EHR, new CardBuilder(this, CardBuilder.Layout.MENU)
                 .setText("General Examination").setFootnote(" Shows details and options to add images, notes"));
         cards.add(ASSESSMENT, new CardBuilder(this, CardBuilder.Layout.MENU)
-                .setText("Start Assessment").setFootnote(" Start a new question/answer session"));
+                .setText("Assessment").setFootnote("A question/answer session to record observations"));
         cards.add(STOP, new CardBuilder(this, CardBuilder.Layout.MENU)
-                .setText("Stop Examination ").setFootnote(""));
+                .setText("Stop Examination ").setFootnote("Press this to end the appointment. Updates results in EHR"));
         return cards;
     }
 
@@ -101,7 +101,7 @@ public class ExaminationTypeActivity extends Activity {
 
                     case ASSESSMENT:
                         if(!LocalDataStore.getInstance().currentSession.assessment.isRunning)
-                            startActivity(new Intent(ExaminationTypeActivity.this, AssessmentTypeActivity.class));
+                            startActivity(new Intent(ExaminationTypeActivity.this, AssessmentView_StartActivity.class));
                         else
                             startActivity(new Intent(ExaminationTypeActivity.this, AssessmentActivity.class));
                         break;

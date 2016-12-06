@@ -26,6 +26,7 @@ import java.util.List;
 
 import java.io.File;
 import android.os.FileObserver;
+import android.widget.TextView;
 
 import org.json.JSONException;
 
@@ -39,6 +40,7 @@ public class MenuActivity extends Activity {
 //    static final int MEDICATIONS = 2;
     static final int TAKE_AN_IMAGE = 2;
     static final int TAKE_NOTES = 4;
+    static final int SHOW_SCORE = 5;
     static final int SHOW_IMAGES = 3;
     //static final int SLIDER = 7;
     private CardScrollView mCardScroller;
@@ -50,8 +52,8 @@ public class MenuActivity extends Activity {
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
 
-        mAdapter = new CardAdapter(createCards(this));
         mCardScroller = new CardScrollView(this);
+        mAdapter = new CardAdapter(createCards(this));
         mCardScroller.setAdapter(mAdapter);
         setContentView(mCardScroller);
         setCardScrollerListener();
@@ -69,7 +71,9 @@ public class MenuActivity extends Activity {
                 cards.add(PERSONAL_DETAILS, new CardBuilder(this, CardBuilder.Layout.COLUMNS_FIXED)
                         .setText("Patient Details\n" + patient.toStringMetadata())
                         .setIcon(R.drawable.boy));
-        } catch (JSONException e) {
+
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
         cards.add(ALLERGIES, new CardBuilder(this, CardBuilder.Layout.TEXT)
@@ -83,6 +87,9 @@ public class MenuActivity extends Activity {
         cards.add(TAKE_NOTES, new CardBuilder(this, CardBuilder.Layout.MENU)
                 .setIcon(R.drawable.sym_action_chat)
                 .setText("Show Notes").setFootnote("Long Tap to add new note"));
+        cards.add(SHOW_SCORE, new CardBuilder(this, CardBuilder.Layout.MENU)
+//                .setIcon(R.drawable.sym_action_chat)
+                .setText("Show Gum Score").setFootnote("Shows the gum score images"));
 
 
 //        cards.add(STREAM, new CardBuilder(this, CardBuilder.Layout.TEXT)
@@ -129,6 +136,11 @@ public class MenuActivity extends Activity {
                     case TAKE_AN_IMAGE:
                         Log.d(TAG, "Taking an image!");
                         startActivity(new Intent(MenuActivity.this, CameraActivity.class));
+                        //takePicture();
+                        break;
+                    case SHOW_SCORE:
+                        Log.d(TAG, "Taking an image!");
+                        startActivity(new Intent(MenuActivity.this, ScoresActivity.class));
                         //takePicture();
                         break;
                     default:

@@ -3,6 +3,9 @@ package com.medex;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,71 +21,64 @@ import com.google.android.glass.app.Card;
 import com.google.android.glass.media.Sounds;
 import com.google.android.glass.touchpad.Gesture;
 import com.google.android.glass.touchpad.GestureDetector;
+import com.google.android.glass.widget.CardBuilder;
 import com.google.android.glass.widget.CardScrollAdapter;
 import com.google.android.glass.widget.CardScrollView;
+import com.medex.cards.CardAdapter;
 import com.medex.globals.LocalDataStore;
 import com.medex.globals.ParseUtil;
+import com.medex.globals.ServicesEnum;
+import com.medex.globals.ThreadUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MainNotesActivity extends Activity {
+public class ScoresActivity extends Activity {
 
 	private static final int SPEECH_REQUEST = 0;
-	private List<Card> mCards;
+	private List<CardBuilder>  mCards;
 	private CardScrollView mCardScrollView;
 	private AudioManager mAudioManager;
 	private final Handler mHandler = new Handler();
 	private GestureDetector mGestureDector;
+	JSONArray examinations;
+
+	int position=0;
 
 	private final GestureDetector.BaseListener mBaseListener = new GestureDetector.BaseListener() {
 		@Override
 		public boolean onGesture(Gesture gesture) {
 
-			if (gesture == Gesture.LONG_PRESS) {
-				Log.d("adf", "tappp");
-				mAudioManager.playSoundEffect(Sounds.TAP);
-				openOptionsMenu();
+			if (gesture == Gesture.SWIPE_RIGHT) {
+				if(examinations.length() > position){
+					position++;
+					Bitmap bitmap = getImage();
+					mCards.add(new CardBuilder(ScoresActivity.this , CardBuilder.Layout.CAPTION)
+							.addImage(bitmap)
+							.setText(""));
+				}
 				return true;
 			} else {
 				return false;
 			}
 		}
 	};
-	private NotesCardScrollAdapter mAdapter;
+	private CardScrollAdapter mAdapter;
 
 	private void displaySpeechRecognizer() {
 		Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 		startActivityForResult(intent, SPEECH_REQUEST);
 	}
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == SPEECH_REQUEST && resultCode == RESULT_OK) {
-			ParseUtil util=new ParseUtil();
-			List<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-			String spokenText = results.get(0);
-			LocalDataStore.getInstance().currentSession.addNotes(spokenText);
-			try {
-				boolean flag=util.postPatientDetails(MainNotesActivity.this);
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-			Card card = new Card(this);
-			card.setText(spokenText);
-			mCards.add(card);
-		}
-		finish();
-		//super.onActivityResult(requestCode, resultCode, data);
-	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -98,37 +94,74 @@ public class MainNotesActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		JSONArray notesarray = new JSONArray();
-		Log.d("adf", "aaaa");
-		setContentView(R.layout.activity_main_notes);
+
+//		setContentView(CardBuilder.Layout.CAPTION);
 		mGestureDector = new GestureDetector(
 				this).setBaseListener(mBaseListener);
 		mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-		LinkedList<JSONObject> notes = LocalDataStore.getInstance().currentSession.getNotes();
-		mCards = new ArrayList<Card>();
-		if(notes.size()==0){
-			Card card = new Card(this);
-			card.setText("No notes found");
-			card.setFootnote("");
-			mCards.add(card);
+
+		mCards = new ArrayList<CardBuilder>();
+		try {
+			examinations = LocalDataStore.getInstance().currentSession.getUser().getJSONArray("examinations");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		if(examinations != null && examinations.length() > 0) {
+			Bitmap bitmap = getImage();
+			mCards.add(new CardBuilder(this , CardBuilder.Layout.CAPTION)
+					.addImage(bitmap)
+					.setText(""));
 		}
 		else
-			for (JSONObject note : notes) {
-				Card card = new Card(this);
-				try {
-					card.setText(note.getString("text"));
-					card.setFootnote(note.getString("timestamp"));
-					mCards.add(card);
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-
-			}
+			mCards.add(new CardBuilder(this , CardBuilder.Layout.TEXT)
+					.setText("No gum scores found"));
 		mCardScrollView = new CardScrollView(this);
 		mAdapter = new NotesCardScrollAdapter();
 		mCardScrollView.setAdapter(mAdapter);
 		mCardScrollView.activate();
 		setContentView(mCardScrollView);
+	}
+
+	private List<CardBuilder> createCards(Context context) {
+
+		ArrayList<CardBuilder> cards = new ArrayList<CardBuilder>();
+		if(examinations != null && examinations.length() > 0) {
+			Bitmap bitmap = getImage();
+			cards.add(0, new CardBuilder(this, CardBuilder.Layout.CAPTION)
+					.addImage(bitmap)
+					.setText(""));
+		}
+		position++;
+		return cards;
+	}
+
+	private Bitmap getImage(){
+//		try {
+//			ThreadUtil thread = new ThreadUtil(ServicesEnum.GET_SCORE);
+//			thread.start();
+//			thread.join();
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+		Bitmap myBitmap = null;
+		try {
+			URL url = new URL(LocalDataStore.getInstance().examinations.get(examinations.getString(position)));
+			myBitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+			Matrix matrix = new Matrix();
+			matrix.postRotate(90);
+			Bitmap rotated = Bitmap.createBitmap(myBitmap, 0, 0, myBitmap.getWidth(), myBitmap.getHeight(), matrix, true);
+
+			myBitmap = Bitmap.createScaledBitmap(rotated, 700, 400, false);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		position++;
+		return myBitmap;
+
 	}
 
 	private class NotesCardScrollAdapter extends CardScrollAdapter {
@@ -159,26 +192,5 @@ public class MainNotesActivity extends Activity {
 
 	}
 
-	public void addNotes() {
-		displaySpeechRecognizer();
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.new_note:
-			mHandler.post(new Runnable() {
-
-				@Override
-				public void run() {
-					// TODO Auto-generated method stub
-					addNotes();
-				}
-			});
-			return true;
-		default:
-			return false;
-		}
-	}
 
 }

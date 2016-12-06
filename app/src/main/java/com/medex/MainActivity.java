@@ -50,6 +50,7 @@ public class MainActivity extends Activity {
         public void run() {
             try {
                 LocalDataStore.getInstance().patients = ParseUtil.getPatients();
+                LocalDataStore.getInstance().examinations = ParseUtil.getExaminations();
                 System.out.println("\nRunning BackGroung Fetch Service\n");
        //         handler.postDelayed(this, 1200000);
             }

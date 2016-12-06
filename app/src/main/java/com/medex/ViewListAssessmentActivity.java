@@ -17,58 +17,50 @@ import com.medex.cards.CardAdapter;
 import com.medex.globals.LocalDataStore;
 import com.medex.globals.ServicesEnum;
 import com.medex.globals.ThreadUtil;
+import com.medex.globals.Utilities;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-import java.util.Iterator;
 
-public class AssessmentTypeActivity extends Activity {
-    private static final String TAG = AssessmentTypeActivity.class.getSimpleName();
-
+public class ViewListAssessmentActivity extends Activity {
+    private static final String TAG = MainActivity.class.getSimpleName();
     private CardScrollView mCardScroller;
 
     private View mView;
     private CardScrollAdapter mAdapter;
 
-    private LocalDataStore localDataStore_instance;
-    private ArrayList<String> assessmentTypes;
-
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
-        Log.d(TAG, "onCREATE ExaminationTypeActivity!");
-        System.out.println("Track: " + this.getClass());
+
         mAdapter = new CardAdapter(createCards(this));
         mCardScroller = new CardScrollView(this);
         mCardScroller.setAdapter(mAdapter);
         setContentView(mCardScroller);
         setCardScrollerListener();
-
-        localDataStore_instance = LocalDataStore.getInstance();
     }
-
     private List<CardBuilder> createCards(Context context) {
         ArrayList<CardBuilder> cards = new ArrayList<CardBuilder>();
-
+        int i = 0;
         try {
-            if(LocalDataStore.getInstance().assessment_info == null){
-                ThreadUtil thread = new ThreadUtil(ServicesEnum.GET_ASSESSMENTS);
-                thread.start();
-                thread.join();
-            }
-            Set<String> keys = LocalDataStore.getInstance().assessment_info.keySet();
-            Iterator iter = keys.iterator();
-            int i = 0;
-            assessmentTypes = new ArrayList<String>();
-            while(iter.hasNext()){
-                String type= (String) iter.next();
-                assessmentTypes.add(type);
-                cards.add(i++,new CardBuilder(this,CardBuilder.Layout.MENU)
-                        .setText(type));}
+
+            LinkedList<JSONObject> assessments = LocalDataStore.getInstance().currentSession.completedAssessments;
+            if(assessments.size() == 0)
+                cards.add(0,new CardBuilder(this, CardBuilder.Layout.TEXT)
+                        .setText("No recorded assessments"));
+
+            else
+                for(JSONObject assessment : assessments)
+                {
+                    cards.add(i++,new CardBuilder(this, CardBuilder.Layout.TEXT)
+                            .setText(assessment.getString("type")+"\n"+assessment.getString("subtype")).setFootnote(assessment.getString("date")));
+
+                }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -83,13 +75,10 @@ public class AssessmentTypeActivity extends Activity {
 //                .setText("Stream Live Video"));
         return cards;
     }
-
     @Override
     protected void onResume() {
         super.onResume();
-        if(mCardScroller != null) {
-            mCardScroller.activate();
-        }
+        mCardScroller.activate();
     }
 
     @Override
@@ -97,13 +86,6 @@ public class AssessmentTypeActivity extends Activity {
         mCardScroller.deactivate();
         super.onPause();
     }
-
-
-    /**
-     * Builds a Glass styled "Hello World!" view using the {@link CardBuilder} class.
-     */
-
-
     private void setCardScrollerListener() {
         mCardScroller.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -111,22 +93,12 @@ public class AssessmentTypeActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d(TAG, "Clicked view at position " + position + ", row-id " + id);
                 int soundEffect = Sounds.TAP;
-                Intent intent = new Intent(AssessmentTypeActivity.this, AssessmentSubTypeActivity.class);
-                intent.putExtra("type", assessmentTypes.get(position));
-                startActivityForResult(intent,10);
+                Intent intent = new Intent(ViewListAssessmentActivity.this, ViewAssessmentActivity.class);
+                intent.putExtra("position", String.valueOf(position));
+                startActivity(intent);
                 AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
                 am.playSoundEffect(soundEffect);
             }
         });
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // TODO Auto-generated method stub
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 10)
-        {
-            finish();
-        }
     }
 }
